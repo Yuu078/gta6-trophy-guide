@@ -1,3 +1,6 @@
+// app.js — entry point for Leonida Legend (GTA VI trophy guide & tracker).
+// Boots the page: loads the trophy data, restores the saved tracker state and
+// the remembered filters, wires every control, and renders the first view.
 // Leonida Legend — GTA VI trophy guide & tracker (offline, static, no build step).
 // Loads the official trophy list from data/trophies.json, wires the tracker
 // (tracker.js) and the roadmap (roadmap.js) to the page, and keeps every control
@@ -10,11 +13,16 @@ import {
 } from './tracker.js';
 import { renderRoadmap } from './roadmap.js';
 
-const doc = await (await fetch('data/trophies.json')).json();
-const trophies = doc.trophies;
+let doc;
+try {
+  doc = await (await fetch('data/trophies.json')).json();
+} catch {
+  doc = { trophies: [] }; // a missing or corrupt data file must not break the page
+}
+const trophies = Array.isArray(doc.trophies) ? doc.trophies : [];
 const state = loadState();
 if (!state.selected || !trophies.some((t) => t.name === state.selected)) {
-  state.selected = trophies[0].name;
+  state.selected = trophies[0]?.name ?? null;
 }
 
 const els = {
@@ -51,7 +59,36 @@ function selectTrophy(name) {
   showTracker();
 }
 
+// Filter memory: the current filters live under their own localStorage key, separate from the
+// tracker progress key, so the list reopens exactly as it was left. renderAll() runs after every
+// filter change, so saving there keeps the stored filters in step with the visible ones; the
+// restore below runs before the toolbar is populated and before the first render.
+const FILTER_KEY = 'leonida-legend-filters-v1';
+
+function saveFilters() {
+  localStorage.setItem(FILTER_KEY, JSON.stringify({
+    kind: state.kind,
+    grade: state.grade,
+    query: state.query,
+    hideEarned: state.hideEarned,
+  }));
+}
+
+function restoreFilters() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(FILTER_KEY) ?? 'null');
+    if (!raw) return;
+    if (typeof raw.kind === 'string') state.kind = raw.kind;
+    if (typeof raw.grade === 'string') state.grade = raw.grade;
+    if (typeof raw.query === 'string') state.query = raw.query;
+    state.hideEarned = raw.hideEarned === true;
+  } catch { /* a corrupt filter save is ignored; the loaded tracker state still applies */ }
+}
+
+restoreFilters();
+
 function renderAll() {
+  saveFilters();
   renderProgress(trophies, state, els);
   renderKindFilters(trophies, state, els.kindFilters, (kind) => {
     state.kind = kind;

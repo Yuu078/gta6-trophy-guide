@@ -34,3 +34,40 @@ writeFileSync(
   join(out, 'dossier.json'),
   buildDossier(out, { text_max_bytes: 163840, screenshots: { max: 4, max_bytes: 262144 }, app_max_files: 993, app_max_bytes: 50331648 }),
 );
+
+// Verification (hand-in check): confirm every file the guide needs actually landed in the output
+// directory, and print a small manifest so the hand-in can be eyeballed from the log alone. This
+// section only reads the output directory (existsSync / statSync / readdirSync / console.log) — it
+// never writes to it — so dossier.json stays exactly what buildDossier wrote above.
+import { readdirSync, statSync } from 'node:fs';
+
+const expectedPaths = [
+  'app/index.html',
+  'app/app.js',
+  'app/style.css',
+  'app/roadmap.js',
+  'app/tracker.js',
+  'app/data/trophies.json',
+  'dossier.json',
+];
+
+let manifestCount = 0;
+let manifestBytes = 0;
+for (const rel of expectedPaths) {
+  const abs = join(out, rel);
+  if (!existsSync(abs)) throw new Error(`Missing expected output file: ${rel}`);
+  const size = statSync(abs).size;
+  manifestCount += 1;
+  manifestBytes += size;
+  console.log(`[manifest] ${rel} - ${size} bytes`);
+}
+
+const shotNames = readdirSync(join(out, 'screenshots')).sort();
+for (const name of shotNames) {
+  const size = statSync(join(out, 'screenshots', name)).size;
+  manifestCount += 1;
+  manifestBytes += size;
+  console.log(`[manifest] screenshots/${name} - ${size} bytes`);
+}
+
+console.log(`Hand-in verified: ${manifestCount} files, ${manifestBytes} bytes total in ${out}.`);
