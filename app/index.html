@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leonida Legend — GTA VI Trophy Guide &amp; Tracker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="topbar">
+  <div class="brand">
+    <h1 id="app-title">Leonida Legend</h1>
+    <p id="app-subtitle">Grand Theft Auto VI · PlayStation 5 trophy guide &amp; tracker — all 55 trophies, works fully offline</p>
+  </div>
+  <div id="progress-panel">
+    <div id="progress-numbers"><span id="progress-percent">0%</span> <span id="progress-count">0 of 55 earned</span></div>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+    <p id="progress-grades">Platinum 0/1 · Gold 0/2 · Silver 0/6 · Bronze 0/46</p>
+  </div>
+</header>
+
+<nav id="view-tabs">
+  <button id="tab-tracker" class="tab active" type="button">Tracker &amp; guides</button>
+  <button id="tab-roadmap" class="tab" type="button">Roadmap to the platinum</button>
+</nav>
+
+<main>
+<section id="tracker-view">
+  <div id="toolbar">
+    <input id="search" type="search" placeholder="Search trophies…" aria-label="Search trophies">
+    <div id="kind-filters" role="group" aria-label="Filter by kind"></div>
+    <label id="grade-label">Grade
+      <select id="grade-filter">
+        <option value="all">All grades</option>
+        <option value="platinum">Platinum</option>
+        <option value="gold">Gold</option>
+        <option value="silver">Silver</option>
+        <option value="bronze">Bronze</option>
+      </select>
+    </label>
+    <label class="toggle"><input id="spoiler-toggle" type="checkbox" checked> Spoiler protection: hide story trophies until earned</label>
+    <label class="toggle"><input id="hide-earned-toggle" type="checkbox"> Hide earned</label>
+    <button id="export-btn" type="button">Export progress</button>
+    <button id="import-btn" type="button">Import progress</button>
+    <input id="import-file" type="file" accept="application/json,.json" hidden>
+  </div>
+  <p id="filter-status"></p>
+  <div id="workspace">
+    <div id="trophy-list"></div>
+    <aside id="trophy-detail"></aside>
+  </div>
+</section>
+
+<section id="roadmap-view" hidden>
+  <div id="roadmap"></div>
+</section>
+</main>
+
+<footer id="colophon">
+  <p id="sources-line">Guides written for this entry in our own words, drawing on: PowerPyx GTA 6 Trophy Guide · PSNProfiles GTA 6 Trophy Guide · PlayStationTrophies.org GTA 6 Trophy Guide · TrueTrophies GTA 6 Trophy Guide · Exophase GTA 6 Trophy List · GTA Wiki (Fandom) · Push Square GTA 6 Guide. Each trophy names its source beside its guide.</p>
+  <p id="legal-line">Unofficial fan-made guide and tracker. Trophy names and descriptions are as PlayStation publishes them. No Rockstar Games logo or artwork is used; the design is original. Progress is stored only in your browser (localStorage) and never leaves your device.</p>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
