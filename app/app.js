@@ -101,7 +101,7 @@ function renderAll() {
   const filtering = state.kind !== 'all' || state.grade !== 'all' || state.query || state.hideEarned;
   els.filterStatus.textContent = filtering
     ? `Showing ${shown} of ${trophies.length} trophies — filters active.`
-    : `Showing all ${trophies.length} trophies. Progress is saved in this browser automatically.`;
+    : `Showing ${shown} of ${trophies.length} trophies. Progress is saved in this browser automatically.`;
 }
 
 function showTracker() {
@@ -124,6 +124,13 @@ els.spoiler.checked = state.spoiler;
 els.hideEarned.checked = state.hideEarned;
 
 els.search.addEventListener('input', () => { state.query = els.search.value; saveState(state); renderAll(); });
+document.addEventListener('keydown', (event) => {
+  if (event.key !== '/') return;
+  const tag = event.target?.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  event.preventDefault();
+  els.search.focus();
+});
 els.gradeFilter.addEventListener('change', () => { state.grade = els.gradeFilter.value; saveState(state); renderAll(); });
 els.spoiler.addEventListener('change', () => { state.spoiler = els.spoiler.checked; saveState(state); renderAll(); });
 els.hideEarned.addEventListener('change', () => { state.hideEarned = els.hideEarned.checked; saveState(state); renderAll(); });

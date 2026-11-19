@@ -31,7 +31,7 @@ Open `app/index.html` in any modern web browser. That is all — there is
 nothing to install, build or serve, and the app works completely
 offline once the files are on your machine.
 
-To hand it in, run `node main.ts` — it copies `app/` and `screenshots/` to the output directory and writes `dossier.json` there.
+To hand it in, run `node main.ts` — it copies `app/` and `screenshots/` to the output directory and writes `dossier.json` there. The entry verifies itself at hand-in: it prints an output manifest of the files it delivered and runs a trophy-data consistency check before finishing.
 
 ## About
 

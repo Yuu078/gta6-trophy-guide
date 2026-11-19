@@ -39,7 +39,7 @@ writeFileSync(
 // directory, and print a small manifest so the hand-in can be eyeballed from the log alone. This
 // section only reads the output directory (existsSync / statSync / readdirSync / console.log) — it
 // never writes to it — so dossier.json stays exactly what buildDossier wrote above.
-import { readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 
 const expectedPaths = [
   'app/index.html',
@@ -71,3 +71,28 @@ for (const name of shotNames) {
 }
 
 console.log(`Hand-in verified: ${manifestCount} files, ${manifestBytes} bytes total in ${out}.`);
+
+// Trophy-data consistency check (read-only): parse the trophy data the guide itself uses and
+// fail the hand-in if it has drifted — the count must be exactly 55, every trophy must carry a
+// non-empty name and description (platform lives once at the top level of this file, not per
+// trophy, so it is checked there), and trophy ids must be unique. This section only reads the
+// source data file; it never writes anything.
+const trophyDoc = JSON.parse(readFileSync(join(here, 'app/data/trophies.json'), 'utf8'));
+const trophyList = Array.isArray(trophyDoc) ? trophyDoc : trophyDoc.trophies;
+if (!Array.isArray(trophyList)) throw new Error('Trophy data inconsistency: trophies is not an array.');
+if (trophyList.length !== 55) throw new Error(`Trophy data inconsistency: expected exactly 55 trophies, found ${trophyList.length}.`);
+if (!Array.isArray(trophyDoc) && (typeof trophyDoc.platform !== 'string' || trophyDoc.platform.trim() === '')) {
+  throw new Error('Trophy data inconsistency: top-level platform field is missing or empty.');
+}
+const seenTrophyIds = new Set();
+for (const trophy of trophyList) {
+  if (typeof trophy.name !== 'string' || trophy.name.trim() === '') {
+    throw new Error(`Trophy data inconsistency: trophy id ${trophy.id} has a missing or empty name.`);
+  }
+  if (typeof trophy.description !== 'string' || trophy.description.trim() === '') {
+    throw new Error(`Trophy data inconsistency: trophy "${trophy.name}" has a missing or empty description.`);
+  }
+  if (seenTrophyIds.has(trophy.id)) throw new Error(`Trophy data inconsistency: duplicate trophy id ${trophy.id}.`);
+  seenTrophyIds.add(trophy.id);
+}
+console.log('Trophy data consistent: 55 trophies, all fields present, ids unique.');
